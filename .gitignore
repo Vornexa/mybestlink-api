@@ -1,0 +1,59 @@
+# -------------------------
+# Python
+# -------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+build/
+
+# Virtual Environment
+venv/
+.env/
+.venv/
+env/
+bsi.crt
+*.crt
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+
+# Logs & Cache
+*.log
+logs/
+*.sqlite3
+*.db
+.cache/
+.pytest_cache/
+
+# Byte-compiled / Optimized
+*.pyo
+*.pyd
+*.pyc
+
+# Config & Secrets
+.env
+*.ini
+config.json
+credentials.json
+token.txt
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Testing / Coverage
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+*.py,cover
+
+# Misc
+*.bak
+*.tmp
