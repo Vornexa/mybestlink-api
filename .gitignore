@@ -8,6 +8,7 @@ __pycache__/
 *.pdb
 *.egg-info/
 *.egg
+*.pkl
 build/
 
 # Virtual Environment
@@ -42,6 +43,9 @@ logs/
 config.json
 credentials.json
 token.txt
+
+# Cookies file
+cookies.pkl
 
 # OS-specific
 .DS_Store
