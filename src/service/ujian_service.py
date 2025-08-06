@@ -8,6 +8,7 @@ from src.utils.session_manager import get_session, save_cookies
 
 BASE_URL = "https://elearning.bsi.ac.id"
 UJIAN_BASE = "https://ujiankampusa.bsi.ac.id"
+ssl_context = ssl._create_unverified_context()
 
 async def fetch_ujian_dashboard():
     session = await get_session()
@@ -59,52 +60,52 @@ async def fetch_ujian_dashboard():
             raise Exception(f"Gagal akses dashboard ujian: {resp.status}, body: {html[:200]}")
         return html
     
-async def cek_lokasi(latitude, longitude):
-    session = await get_session()
-    ssl_context = ssl._create_unverified_context()
+# async def cek_lokasi(latitude, longitude):
+#     session = await get_session()
+#     ssl_context = ssl._create_unverified_context()
 
-    async def refresh_session():
-        async with session.get("https://ujiankampusa.bsi.ac.id/dashboard",
-                               ssl=ssl_context, allow_redirects=True):
-            await save_cookies()
+#     async def refresh_session():
+#         async with session.get("https://ujiankampusa.bsi.ac.id/dashboard",
+#                                ssl=ssl_context, allow_redirects=True):
+#             await save_cookies()
 
-    async def post_location():
-        cookies = {c.key: c.value for c in session.cookie_jar}
-        xsrf_cookie = cookies.get("XSRF-TOKEN")
-        if not xsrf_cookie:
-            raise Exception("XSRF-TOKEN tidak ditemukan di cookie")
+#     async def post_location():
+#         cookies = {c.key: c.value for c in session.cookie_jar}
+#         xsrf_cookie = cookies.get("XSRF-TOKEN")
+#         if not xsrf_cookie:
+#             raise Exception("XSRF-TOKEN tidak ditemukan di cookie")
 
-        xsrf_token = urllib.parse.unquote(xsrf_cookie)
-        headers = {
-            "Content-Type": "application/json",
-            "Referer": "https://ujiankampusa.bsi.ac.id/dashboard",
-            "Origin": "https://ujiankampusa.bsi.ac.id",
-            "X-XSRF-TOKEN": xsrf_token
-        }
+#         xsrf_token = urllib.parse.unquote(xsrf_cookie)
+#         headers = {
+#             "Content-Type": "application/json",
+#             "Referer": "https://ujiankampusa.bsi.ac.id/dashboard",
+#             "Origin": "https://ujiankampusa.bsi.ac.id",
+#             "X-XSRF-TOKEN": xsrf_token
+#         }
 
-        payload = {"latitude": latitude, "longitude": longitude}
+#         payload = {"latitude": latitude, "longitude": longitude}
 
-        async with session.post(
-            "https://ujiankampusa.bsi.ac.id/api/save-location",
-            json=payload,
-            headers=headers,
-            ssl=ssl_context
-        ) as resp:
-            return resp.status, await resp.text()
+#         async with session.post(
+#             "https://ujiankampusa.bsi.ac.id/api/save-location",
+#             json=payload,
+#             headers=headers,
+#             ssl=ssl_context
+#         ) as resp:
+#             return resp.status, await resp.text()
 
-    await refresh_session()
-    status, body = await post_location()
+#     await refresh_session()
+#     status, body = await post_location()
 
-    if status == 419:
-        # Refresh lagi kalau token expired
-        await refresh_session()
-        status, body = await post_location()
+#     if status == 419:
+#         # Refresh lagi kalau token expired
+#         await refresh_session()
+#         status, body = await post_location()
 
-    if status != 200:
-        raise Exception(f"Gagal validasi lokasi: {status}, body: {body[:200]}")
+#     if status != 200:
+#         raise Exception(f"Gagal validasi lokasi: {status}, body: {body[:200]}")
 
-    await save_cookies()
-    return True
+#     await save_cookies()
+#     return True
 
 
 # async def fetch_jadwal_uts():
@@ -215,7 +216,7 @@ async def get_jadwal_ujian(request):
 
     try:
         dashboard_html = await fetch_ujian_dashboard()
-        # await save_cookies()
+        await save_cookies()
 
         soup = BeautifulSoup(dashboard_html, "html.parser")
         target_link = None
@@ -271,20 +272,61 @@ async def get_jadwal_ujian(request):
             status=500,
         )
 
+async def post_cek_lokasi_service(latitude: float, longitude: float):
+    session = await get_session()
+    ssl_context = ssl._create_unverified_context()
+
+    # 1. Panggil flow redirect elearning -> ujian (seperti fetch_ujian_dashboard)
+    dashboard_html = await fetch_ujian_dashboard()  # ini sudah memastikan session valid
+    await save_cookies()
+
+    # 2. Ambil token XSRF dari cookie (ujiankampusa.bsi.ac.id)
+    cookies = {c.key: c.value for c in session.cookie_jar}
+    xsrf_cookie = cookies.get("XSRF-TOKEN")
+    if not xsrf_cookie:
+        return {"success": False, "error": "XSRF token tidak ditemukan di cookie"}
+
+    xsrf_token = urllib.parse.unquote(xsrf_cookie)
+
+    # 3. Kirim lokasi ke API ujian
+    url = "https://ujiankampusa.bsi.ac.id/api/save-location"
+    payload = {"latitude": latitude, "longitude": longitude}
+
+    headers = {
+        "Content-Type": "application/json",
+        "Referer": "https://ujiankampusa.bsi.ac.id/dashboard",
+        "Origin": "https://ujiankampusa.bsi.ac.id",
+        "X-XSRF-TOKEN": xsrf_token,
+        "User-Agent": "Mozilla/5.0"
+    }
+
+    async with session.post(url, json=payload, headers=headers, ssl=ssl_context) as resp:
+        body = await resp.text()
+        if resp.status == 200:
+            return {"success": True, "message": "Lokasi berhasil divalidasi"}
+        else:
+            return {"success": False, "error": f"Gagal validasi lokasi: {resp.status}, body: {body[:300]}"}
+    payload = {"latitude": latitude, "longitude": longitude}
+    url = f"{UJIAN_BASE}/api/save-location"
+
+    async with session.post(url, json=payload, headers=headers, ssl=ssl_context) as resp:
+        text = await resp.text()
+        if resp.status == 200:
+            try:
+                return await resp.json()
+            except:
+                return {"success": False, "error": f"Unexpected response: {text}"}
+        else:
+            return {"success": False, "error": f"Gagal validasi lokasi: {resp.status}, body: {text}"}
+
 
 async def post_cek_lokasi(request):
-    try:
-        payload = await request.json()
-        latitude = payload.get("latitude")
-        longitude = payload.get("longitude")
+    data = await request.json()
+    latitude = data.get("latitude")
+    longitude = data.get("longitude")
 
-        if latitude is None or longitude is None:
-            return web.json_response(
-                {"success": False, "error": "Latitude dan longitude harus ada."},
-                status=400
-            )
+    if latitude is None or longitude is None:
+        return web.json_response({"error": "latitude and longitude are required"}, status=400)
 
-        success = await cek_lokasi(latitude, longitude)
-        return web.json_response({"success": success})
-    except Exception as e:
-        return web.json_response({"success": False, "error": str(e)}, status=500)
+    result = await post_cek_lokasi_service(latitude, longitude)
+    return web.json_response(result)

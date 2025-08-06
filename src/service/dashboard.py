@@ -1,7 +1,7 @@
 # Endpoint dashboard
-from parser.mybestlink_parser import parse_dashboard
+from src.parser.mybestlink_parser import parse_dashboard
 from src.service.proxy_service import fetch_data
-from utils.session_manager import save_cookies
+from src.utils.session_manager import save_cookies
 from aiohttp import web
 
 
