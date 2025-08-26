@@ -42,6 +42,7 @@ logs/
 config.json
 credentials.json
 token.txt
+cookies.pkl
 
 # OS-specific
 .DS_Store
