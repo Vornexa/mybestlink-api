@@ -43,6 +43,7 @@ logs/
 config.json
 credentials.json
 token.txt
+cookies.pkl
 
 # Cookies file
 cookies.pkl
