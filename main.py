@@ -1,5 +1,5 @@
 from aiohttp import web
-from route import setup_routes
+from src.router.route import setup_routes
 from src.middleware.base_middleware import base_middleware
 import socket
 

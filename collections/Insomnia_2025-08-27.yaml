@@ -1,0 +1,157 @@
+type: collection.insomnia.rest/5.0
+name: Mybestlink-api
+meta:
+  id: wrk_3177171e97664841824787beb94c043e
+  created: 1752765268127
+  modified: 1752765268127
+collection:
+  - name: MybestLink API
+    meta:
+      id: fld_38f5dba8bdbf4f4b8a2bd67d92f21166
+      created: 1753771810148
+      modified: 1756270894831
+      sortKey: -1753771810148
+    children:
+      - url: http://127.0.0.1:8000/login
+        name: Login
+        meta:
+          id: req_d781384fc49c4c01b7b4a5bab905e89d
+          created: 1752765290858
+          modified: 1756271223325
+          isPrivate: false
+          sortKey: -1753771813710
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+              "username": "",
+              "password": "#"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://127.0.0.1:8000/dashboard
+        name: dashboard
+        meta:
+          id: req_6692b55e81464ba9a784dffb2c4763f8
+          created: 1756270912308
+          modified: 1756271241615
+          isPrivate: false
+          sortKey: -1750441260903
+        method: GET
+        body:
+          mimeType: application/json
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://127.0.0.1:8000/jadwal/pengganti
+        name: jadwal.pengganti
+        meta:
+          id: req_408f6c1e30df4d4681c6c28569eaaa0c
+          created: 1756270946718
+          modified: 1756271237491
+          isPrivate: false
+          sortKey: -1748775984499.5
+        method: GET
+        body:
+          mimeType: application/json
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://127.0.0.1:8000/jadwal/ujian
+        name: jadwal.ujian
+        meta:
+          id: req_d63575d5586645fd872c7f660956e419
+          created: 1756271002409
+          modified: 1756271236025
+          isPrivate: false
+          sortKey: -1747943346297.75
+        method: GET
+        body:
+          mimeType: application/json
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://127.0.0.1:8000/cek-lokasi
+        name: cek.lokasi
+        meta:
+          id: req_3b37c9c832e14a2fb9956d93205f757c
+          created: 1756271049555
+          modified: 1756271225894
+          isPrivate: false
+          sortKey: -1752106537306.5
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"latitude": 1234, 
+            	"longitude": 1234
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/11.1.0
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_4bd8d602c18de1ac628c57e4465dceaeeb750db5
+    created: 1752765268130
+    modified: 1752765268130
+environments:
+  name: Base Environment
+  meta:
+    id: env_4bd8d602c18de1ac628c57e4465dceaeeb750db5
+    created: 1752765268129
+    modified: 1752765268129
+    isPrivate: false
