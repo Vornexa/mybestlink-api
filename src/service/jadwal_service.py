@@ -7,6 +7,67 @@ from aiohttp import web
 
 BASE_URL = "https://elearning.bsi.ac.id"
 
+async def get_jadwal_kuliah(request):
+    session = await get_session()
+    ssl_context = ssl._create_unverified_context()
+
+    async with session.get(f"{BASE_URL}/sch", ssl=ssl_context) as resp:
+        html = await resp.text()
+        await save_cookies()
+
+    soup = BeautifulSoup(html, "html.parser")
+    jadwal = []
+
+    cards = soup.select(".pricing-plan")
+    for card in cards:
+        try:
+            matakuliah = card.select_one(".pricing-title")
+            waktu_info = card.select_one(".pricing-save")
+            hari, jam_mulai, jam_selesai = None, None, None
+            if waktu_info:
+                try:
+                    hari_jam = waktu_info.get_text(strip=True)
+                    hari, jam_range = hari_jam.split(" - ", 1)
+                    jam_mulai, jam_selesai = jam_range.split("-", 1)
+                except Exception:
+                    pass
+
+            # fungsi pencari info tambahan
+            def get_info(label):
+                el = card.find(string=lambda t: t and label in t)
+                if el and ":" in el:
+                    return el.split(":", 1)[1].strip() or None
+                return None
+
+            jadwal.append({
+                "matakuliah": matakuliah.get_text(strip=True) if matakuliah else None,
+                "kode_mtk": get_info("Kode MTK"),
+                "dosen": get_info("Kode Dosen"),
+                "ruang": get_info("No Ruang"),
+                "sks": get_info("SKS"),
+                "kode_gabung": get_info("Kode Gabung"),
+                "waktu": {
+                    "hari": hari.capitalize() if hari else None,
+                    "jam_mulai": jam_mulai.strip() if jam_mulai else None,
+                    "jam_selesai": jam_selesai.strip() if jam_selesai else None,
+                }
+            })
+
+        except Exception as e:
+            print("Error parsing a schedule card:", e)
+            continue
+
+    response = {
+        "status": "success",
+        "data": {"jadwal": jadwal},
+        "meta": {
+            "total": len(jadwal),
+            "timestamp": datetime.utcnow().isoformat() + "Z"
+        }
+    }
+
+    return web.json_response(response)
+
 async def get_jadwal_pengganti(request):
     session = await get_session()
     ssl_context = ssl._create_unverified_context()
