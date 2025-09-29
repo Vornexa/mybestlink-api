@@ -1,8 +1,9 @@
 # Endpoint dashboard
+from aiohttp import web
+
 from src.parser.mybestlink_parser import parse_dashboard
 from src.service.proxy_service import fetch_data
 from src.utils.session_manager import save_cookies
-from aiohttp import web
 
 
 async def get_dashboard(request):

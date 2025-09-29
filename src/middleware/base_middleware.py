@@ -1,5 +1,6 @@
 from aiohttp import web
 
+
 @web.middleware
 async def base_middleware(request, handler):
     try:
