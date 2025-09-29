@@ -1,14 +1,18 @@
-import ssl, re
-from urllib.parse import urlparse, parse_qs
-from bs4 import BeautifulSoup
-from datetime import datetime
-from aiohttp import web
+import re
+import ssl
 import urllib
+from datetime import datetime
+from urllib.parse import urlparse
+
+from aiohttp import web
+from bs4 import BeautifulSoup
+
 from src.utils.session_manager import get_session, save_cookies
 
 BASE_URL = "https://elearning.bsi.ac.id"
 UJIAN_BASE = "https://ujiankampusa.bsi.ac.id"
 ssl_context = ssl._create_unverified_context()
+
 
 async def fetch_ujian_dashboard():
     session = await get_session()
@@ -20,7 +24,8 @@ async def fetch_ujian_dashboard():
         "Referer": f"{BASE_URL}/halaman-ujian"
     }
 
-    async with session.get(f"{BASE_URL}/halaman-ujian", headers=headers, ssl=ssl_context, allow_redirects=False) as resp:
+    async with session.get(f"{BASE_URL}/halaman-ujian", headers=headers, ssl=ssl_context,
+                           allow_redirects=False) as resp:
         await save_cookies()
         if resp.status == 302:
             redirect_url = resp.headers.get('Location')
@@ -59,7 +64,8 @@ async def fetch_ujian_dashboard():
         if resp.status != 200:
             raise Exception(f"Gagal akses dashboard ujian: {resp.status}, body: {html[:200]}")
         return html
-    
+
+
 # async def cek_lokasi(latitude, longitude):
 #     session = await get_session()
 #     ssl_context = ssl._create_unverified_context()
@@ -199,6 +205,7 @@ def parse_jadwal_uts(html):
                 })
     return jadwal
 
+
 # async def get_jadwal_uts():
 #     html = await fetch_jadwal_uts()
 #     parsed = parse_jadwal_uts(html)
@@ -271,6 +278,7 @@ async def get_jadwal_ujian(request):
             },
             status=500,
         )
+
 
 async def post_cek_lokasi_service(latitude: float, longitude: float):
     session = await get_session()

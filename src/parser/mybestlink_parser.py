@@ -1,6 +1,7 @@
-from bs4 import BeautifulSoup
 import re
-from datetime import datetime
+
+from bs4 import BeautifulSoup
+
 
 def parse_dashboard(html):
     soup = BeautifulSoup(html, "html.parser")
@@ -29,6 +30,7 @@ def parse_dashboard(html):
         "email": email,
         "email_kampus": email_kampus
     }
+
 
 def parse_jadwal_uts(html):
     """
