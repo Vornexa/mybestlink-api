@@ -1,13 +1,13 @@
-# Endpoint dashboard
+"""Dashboard endpoint."""
+
 from aiohttp import web
 
+from src.app_keys import UPSTREAM_CLIENT_KEY
 from src.parser.mybestlink_parser import parse_dashboard
-from src.service.proxy_service import fetch_data
-from src.utils.session_manager import save_cookies
 
 
-async def get_dashboard(request):
-    html = await fetch_data("/dashboard")
-    await save_cookies()  # simpan cookies setelah akses dashboard
-    parsed = parse_dashboard(html)
-    return web.json_response(parsed)
+async def get_dashboard(request: web.Request) -> web.Response:
+    response = await request.app[UPSTREAM_CLIENT_KEY].elearning(
+        "GET", "/dashboard", expected_statuses={200}
+    )
+    return web.json_response(parse_dashboard(response.text))
