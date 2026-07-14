@@ -12,7 +12,24 @@ collection:
       modified: 1756270894831
       sortKey: -1753771810148
     children:
-      - url: http://127.0.0.1:8000/login
+      - url: "{{ base_url }}/health"
+        name: health
+        meta:
+          id: req_5a0c7d64c6634db0a558f1ce1410d4f1
+          created: 1784000000000
+          modified: 1784000000000
+          isPrivate: false
+          sortKey: -1754000000000
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/login"
         name: Login
         meta:
           id: req_d781384fc49c4c01b7b4a5bab905e89d
@@ -41,7 +58,7 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://127.0.0.1:8000/dashboard
+      - url: "{{ base_url }}/dashboard"
         name: dashboard
         meta:
           id: req_6692b55e81464ba9a784dffb2c4763f8
@@ -65,7 +82,24 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://127.0.0.1:8000/jadwal/pengganti
+      - url: "{{ base_url }}/jadwal/kuliah"
+        name: jadwal.kuliah
+        meta:
+          id: req_f904c42a4af448ec9fa51886c40e1128
+          created: 1784000000000
+          modified: 1784000000000
+          isPrivate: false
+          sortKey: -1749600000000
+        method: GET
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: "{{ base_url }}/jadwal/pengganti"
         name: jadwal.pengganti
         meta:
           id: req_408f6c1e30df4d4681c6c28569eaaa0c
@@ -89,7 +123,7 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://127.0.0.1:8000/jadwal/ujian
+      - url: "{{ base_url }}/jadwal/ujian?type=uts"
         name: jadwal.ujian
         meta:
           id: req_d63575d5586645fd872c7f660956e419
@@ -113,7 +147,7 @@ collection:
             send: true
             store: true
           rebuildPath: true
-      - url: http://127.0.0.1:8000/cek-lokasi
+      - url: "{{ base_url }}/cek-lokasi"
         name: cek.lokasi
         meta:
           id: req_3b37c9c832e14a2fb9956d93205f757c
@@ -150,6 +184,8 @@ cookieJar:
     modified: 1752765268130
 environments:
   name: Base Environment
+  data:
+    base_url: http://127.0.0.1:8000
   meta:
     id: env_4bd8d602c18de1ac628c57e4465dceaeeb750db5
     created: 1752765268129

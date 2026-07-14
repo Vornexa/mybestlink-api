@@ -47,6 +47,8 @@ cookies.pkl
 
 # Cookies file
 cookies.pkl
+cookies.json
+cookies.json.tmp
 
 # OS-specific
 .DS_Store
