@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f4f4ef">
+  <title>API Console · MyBestLink</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/view/styles.css">
+  <script src="/view/theme.js"></script>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js" defer></script>
+  <script src="/view/motion.js" defer></script>
+  <script src="/view/data.js" defer></script>
+</head>
+<body class="console-page">
+  <aside class="sidebar">
+    <a class="brand" href="/cp" aria-label="MyBestLink home"><span class="brand-mark">M</span><span class="brand-copy"><strong>MyBestLink</strong><small>CONTROL OS</small></span></a>
+    <nav class="nav" aria-label="Main navigation">
+      <span class="nav-caption">SYSTEM</span>
+      <a class="nav-link" href="/cp"><i data-lucide="circle-gauge"></i><span>Overview</span><small>01</small></a>
+      <a class="nav-link" href="/cp/connectors"><i data-lucide="unplug"></i><span>Connectors</span><small>02</small></a>
+      <a class="nav-link" href="/cp/configuration"><i data-lucide="sliders-horizontal"></i><span>Configuration</span><small>03</small></a>
+      <a class="nav-link" href="/cp/endpoints"><i data-lucide="route"></i><span>Endpoints</span><small>04</small></a>
+      <span class="nav-caption nav-caption-tools">WORKSPACE</span>
+      <a class="nav-link is-active" href="/cp/data"><i data-lucide="square-terminal"></i><span>API console</span><small>05</small></a>
+    </nav>
+    <div class="sidebar-foot"><div class="instance-state"><span class="pulse-dot"></span><span>CONSOLE READY</span></div><small>SESSION / PRIVATE</small></div>
+  </aside>
+
+  <main class="main console-main">
+    <header class="topbar" data-reveal><div class="breadcrumb"><span>MYBESTLINK</span><i data-lucide="chevron-right"></i><strong>API CONSOLE</strong></div><div class="topbar-actions"><button class="icon-button theme-toggle" data-theme-toggle type="button" aria-label="Toggle color theme"><i class="theme-sun" data-lucide="sun"></i><i class="theme-moon" data-lucide="moon"></i></button><a class="icon-button" href="/cp" aria-label="Back to control panel"><i data-lucide="arrow-left"></i></a></div></header>
+
+    <section class="console-hero" data-reveal>
+      <div class="console-intro"><div class="section-code">05 / DATA WORKSPACE</div><h1>Make the API<br><span>visible.</span></h1><p>Authenticate, execute every endpoint, and inspect structured responses from one focused workspace.</p><div class="status-pill"><span class="pulse-dot" id="console-dot"></span><span id="console-status">Checking API</span></div></div>
+      <div class="request-launcher">
+        <div class="launcher-head"><span>REQUEST BATCH</span><span>6 ENDPOINTS</span></div>
+        <div class="request-stack" aria-hidden="true"><span><i>GET</i>/health</span><span><i>GET</i>/dashboard</span><span><i>GET</i>/jadwal/*</span></div>
+        <button class="button button-primary gather-button" id="gather-button" type="button"><span class="gather-icon"><i data-lucide="play"></i></span><span><strong>Run all requests</strong><small>Execute in parallel</small></span><i data-lucide="arrow-up-right"></i></button>
+        <div class="progress-track"><span id="gather-progress"></span></div><p id="gather-note">Authenticate first for protected data.</p>
+      </div>
+    </section>
+
+    <section class="console-actions" data-reveal>
+      <form class="console-card" id="login-form">
+        <header class="console-card-head"><span class="card-number">01</span><div><span>AUTHENTICATION</span><h2>Portal session</h2></div><span class="connector-status" id="login-status">Not logged in</span></header>
+        <div class="form-grid"><label class="console-field"><span>USERNAME</span><input id="username" name="username" autocomplete="username" required placeholder="Student username"></label><label class="console-field"><span>PASSWORD</span><input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Password"></label></div>
+        <div class="console-card-foot"><small>Credentials are sent only to your local API.</small><button class="button button-primary" id="login-button" type="submit"><span data-button-label>Start session</span><i data-lucide="arrow-right"></i></button></div>
+      </form>
+      <form class="console-card" id="location-form">
+        <header class="console-card-head"><span class="card-number">02</span><div><span>EXAM ACCESS</span><h2>Location check</h2></div><span class="connector-status" id="location-status">Not checked</span></header>
+        <div class="form-grid"><label class="console-field"><span>LATITUDE</span><input id="latitude" name="latitude" inputmode="decimal" required placeholder="-6.200000"></label><label class="console-field"><span>LONGITUDE</span><input id="longitude" name="longitude" inputmode="decimal" required placeholder="106.816666"></label></div>
+        <div class="console-card-foot"><button class="button button-secondary" id="detect-location" type="button"><i data-lucide="locate-fixed"></i><span data-button-label>Use my location</span></button><button class="button button-primary" id="location-button" type="submit"><span data-button-label>Validate</span><i data-lucide="arrow-right"></i></button></div><div class="inline-result" id="location-result" hidden></div>
+      </form>
+    </section>
+
+    <section class="results-section" id="results" data-reveal>
+      <header class="section-heading"><div class="section-code">06 / RESPONSES</div><div><h2>Response board</h2><p>Live output from each API request.</p></div><button class="text-link" id="clear-results" type="button">CLEAR ALL <i data-lucide="x"></i></button></header>
+      <div class="results-grid" id="results-grid">
+        <article class="result-card" data-result="health"><header><span class="result-symbol">01</span><div><h3>API health</h3><code>GET /health</code></div><span class="result-state">Waiting</span></header><div class="result-body empty-state">No response yet.</div></article>
+        <article class="result-card" data-result="dashboard"><header><span class="result-symbol">02</span><div><h3>Student profile</h3><code>GET /dashboard</code></div><span class="result-state">Waiting</span></header><div class="result-body empty-state">No response yet.</div></article>
+        <article class="result-card" data-result="kuliah"><header><span class="result-symbol">03</span><div><h3>Class schedule</h3><code>GET /jadwal/kuliah</code></div><span class="result-state">Waiting</span></header><div class="result-body empty-state">No response yet.</div></article>
+        <article class="result-card" data-result="pengganti"><header><span class="result-symbol">04</span><div><h3>Replacement class</h3><code>GET /jadwal/pengganti</code></div><span class="result-state">Waiting</span></header><div class="result-body empty-state">No response yet.</div></article>
+        <article class="result-card" data-result="uts"><header><span class="result-symbol">05</span><div><h3>Midterm exam</h3><code>GET /jadwal/ujian?type=uts</code></div><span class="result-state">Waiting</span></header><div class="result-body empty-state">No response yet.</div></article>
+        <article class="result-card" data-result="uas"><header><span class="result-symbol">06</span><div><h3>Final exam</h3><code>GET /jadwal/ujian?type=uas</code></div><span class="result-state">Waiting</span></header><div class="result-body empty-state">No response yet.</div></article>
+      </div>
+    </section>
+    <footer><span>MYBESTLINK API CONSOLE</span><span>EPHEMERAL BROWSER SESSION</span></footer>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

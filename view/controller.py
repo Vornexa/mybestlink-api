@@ -1,4 +1,4 @@
-"""Small web control panel for runtime API configuration."""
+"""Server-side controller for the web control panel."""
 
 from __future__ import annotations
 
@@ -14,7 +14,9 @@ from aiohttp import web
 from src.app_keys import SESSION_MANAGER_KEY, SETTINGS_KEY
 from src.config import Settings, normalize_base_url
 
-VIEW_DIR = Path(__file__).resolve().parents[2] / "view"
+VIEW_DIR = Path(__file__).resolve().parent
+TEMPLATE_DIR = VIEW_DIR / "templates"
+STATIC_DIR = VIEW_DIR / "static"
 UI_METADATA_FILE = VIEW_DIR / "ui.json"
 
 
@@ -77,11 +79,23 @@ async def _json_object(request: web.Request) -> Mapping[str, object]:
 
 
 async def get_control_panel(_: web.Request) -> web.FileResponse:
-    return web.FileResponse(VIEW_DIR / "index.html")
+    return web.FileResponse(TEMPLATE_DIR / "index.html")
+
+
+async def get_connectors_page(_: web.Request) -> web.FileResponse:
+    return web.FileResponse(TEMPLATE_DIR / "connectors.html")
+
+
+async def get_configuration_page(_: web.Request) -> web.FileResponse:
+    return web.FileResponse(TEMPLATE_DIR / "configuration.html")
+
+
+async def get_endpoints_page(_: web.Request) -> web.FileResponse:
+    return web.FileResponse(TEMPLATE_DIR / "endpoints.html")
 
 
 async def get_data_console(_: web.Request) -> web.FileResponse:
-    return web.FileResponse(VIEW_DIR / "data.html")
+    return web.FileResponse(TEMPLATE_DIR / "data.html")
 
 
 async def get_control_config(request: web.Request) -> web.Response:
