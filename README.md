@@ -13,6 +13,7 @@ API tidak resmi berbasis `aiohttp` yang mengubah halaman MyBest/BSI menjadi resp
 - Mengambil jadwal UTS/UAS dan mengirim validasi lokasi.
 - Timeout request, verifikasi TLS default, validasi redirect, error JSON, health check, dan shutdown session yang rapi.
 - Cookie disimpan sebagai JSON, bukan `pickle`.
+- Web control panel untuk connector upstream dan konfigurasi runtime.
 
 ## Persyaratan
 
@@ -57,6 +58,11 @@ Respons:
 {"status":"ok"}
 ```
 
+Control panel tersedia di `http://127.0.0.1:8000/cp`. Dari halaman ini Anda
+dapat mengubah URL connector eLearning/ujian, mengetes koneksi, mengatur
+timeout request, dan mengaktifkan/nonaktifkan verifikasi TLS. Perubahan berlaku
+langsung dan disimpan di `control-panel.json` untuk proses berikutnya.
+
 ## Alur penggunaan
 
 1. Panggil `POST /login` dengan username dan password.
@@ -88,6 +94,7 @@ Semua konfigurasi dibaca dari environment variable.
 | `MYBESTLINK_ELEARNING_BASE_URL` | `https://elearning.bsi.ac.id` | Base URL portal elearning. |
 | `MYBESTLINK_EXAM_BASE_URL` | `https://ujiankampusa.bsi.ac.id` | Base URL portal ujian. |
 | `MYBESTLINK_COOKIE_FILE` | `cookies.json` | Lokasi persistensi cookie sesi. |
+| `MYBESTLINK_CONTROL_CONFIG_FILE` | `control-panel.json` | Lokasi konfigurasi yang disimpan oleh control panel. |
 | `MYBESTLINK_REQUEST_TIMEOUT` | `30` | Total timeout upstream dalam detik. |
 | `MYBESTLINK_VERIFY_SSL` | `true` | Verifikasi sertifikat TLS upstream. |
 

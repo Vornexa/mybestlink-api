@@ -1,0 +1,25 @@
+{
+  "connectors": [
+    {
+      "id": "elearning",
+      "name": "BSI eLearning",
+      "purpose": "Login, profile, and class schedule",
+      "settings_key": "elearning_base_url"
+    },
+    {
+      "id": "exam",
+      "name": "BSI Exam Portal",
+      "purpose": "Exam schedule and location validation",
+      "settings_key": "exam_base_url"
+    }
+  ],
+  "endpoints": [
+    { "method": "POST", "path": "/login", "description": "Create BSI session" },
+    { "method": "GET", "path": "/dashboard", "description": "Student overview" },
+    { "method": "GET", "path": "/jadwal/kuliah", "description": "Class schedule" },
+    { "method": "GET", "path": "/jadwal/pengganti", "description": "Replacement classes" },
+    { "method": "GET", "path": "/jadwal/ujian", "description": "Exam schedule" },
+    { "method": "POST", "path": "/cek-lokasi", "description": "Validate location" },
+    { "method": "GET", "path": "/health", "description": "Service health" }
+  ]
+}

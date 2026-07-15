@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>MyBestLink Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/view/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js" defer></script>
+  <script src="/view/motion.js" defer></script>
+  <script src="/view/app.js" defer></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#overview" aria-label="MyBestLink Control home">
+      <span class="brand-mark">M</span>
+      <span>
+        <strong>MyBestLink</strong>
+        <small>Control panel</small>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Control panel navigation">
+      <a class="nav-link is-active" href="#overview" data-nav="overview">
+        <span class="nav-icon">⌂</span><span>Overview</span>
+      </a>
+      <a class="nav-link" href="#connectors" data-nav="connectors">
+        <span class="nav-icon">↗</span><span>Connectors</span>
+      </a>
+      <a class="nav-link" href="#configuration" data-nav="configuration">
+        <span class="nav-icon">⚙</span><span>API config</span>
+      </a>
+      <a class="nav-link" href="#endpoints" data-nav="endpoints">
+        <span class="nav-icon">⌘</span><span>Endpoints</span>
+      </a>
+      <a class="nav-link" href="/cp/data" data-nav="console">
+        <span class="nav-icon">◫</span><span>API console</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="runtime-chip"><span class="pulse-dot"></span>Runtime active</div>
+      <p>Personal API instance</p>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar" data-reveal>
+      <div>
+        <p class="eyebrow">API CONTROL PLANE</p>
+        <h1>Good system, clear controls.</h1>
+      </div>
+      <button class="button button-secondary" id="refresh-button" type="button">
+        <span aria-hidden="true">↻</span> Refresh
+      </button>
+    </header>
+
+    <section class="hero" id="overview" data-section="overview" data-reveal data-reveal-delay="40">
+      <div class="hero-copy">
+        <div class="status-pill"><span class="pulse-dot"></span><span id="api-status">Checking API</span></div>
+        <h2>Everything your API needs,<br><span>in one quiet place.</span></h2>
+        <p>Monitor runtime, manage upstream connectors, and apply API settings without touching source code.</p>
+      </div>
+      <div class="hero-orbit" aria-hidden="true">
+        <div class="orbit-ring ring-one"></div>
+        <div class="orbit-ring ring-two"></div>
+        <div class="orbit-core">MB</div>
+        <span class="orbit-node node-one"></span>
+        <span class="orbit-node node-two"></span>
+      </div>
+    </section>
+
+    <section class="stats-grid" aria-label="Runtime summary" data-reveal data-reveal-delay="80">
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-icon violet">↯</span><span class="trend">LIVE</span></div>
+        <p>API status</p><strong id="stat-status">—</strong><small id="stat-host">Loading runtime</small>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-icon blue">↗</span><span class="muted-label">UPSTREAM</span></div>
+        <p>Connectors</p><strong id="stat-connectors">—</strong><small>Configured services</small>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-icon green">⌘</span><span class="muted-label">ROUTES</span></div>
+        <p>Endpoints</p><strong id="stat-endpoints">—</strong><small>Available API actions</small>
+      </article>
+      <article class="stat-card">
+        <div class="stat-top"><span class="stat-icon amber">◉</span><span class="muted-label">SESSION</span></div>
+        <p>Session cookies</p><strong id="stat-cookies">—</strong><small>Values stay private</small>
+      </article>
+    </section>
+
+    <section class="panel-section" id="connectors" data-section="connectors" data-reveal>
+      <div class="section-heading">
+        <div><p class="eyebrow">UPSTREAM SERVICES</p><h2>Connectors</h2><p>Edit or test the services used by the API.</p></div>
+        <span class="section-count" id="connector-count">2 connectors</span>
+      </div>
+      <div class="connector-grid" id="connector-grid">
+        <article class="connector-card connector-skeleton"><div></div><div></div><div></div></article>
+        <article class="connector-card connector-skeleton"><div></div><div></div><div></div></article>
+      </div>
+    </section>
+
+    <section class="panel-section config-layout" id="configuration" data-section="configuration" data-reveal>
+      <div class="section-heading">
+        <div><p class="eyebrow">RUNTIME SETTINGS</p><h2>API configuration</h2><p>Changes apply immediately and persist for the next launch.</p></div>
+      </div>
+      <form class="config-card" id="config-form">
+        <div class="setting-row">
+          <div><label for="request-timeout">Request timeout</label><p>Maximum wait time for upstream requests.</p></div>
+          <div class="number-field"><input id="request-timeout" name="request_timeout_seconds" type="number" min="1" max="120" step="0.5" required><span>sec</span></div>
+        </div>
+        <div class="setting-row">
+          <div><label for="verify-ssl">Verify upstream TLS</label><p>Keep certificate verification enabled outside local diagnostics.</p></div>
+          <label class="switch"><input id="verify-ssl" name="verify_ssl" type="checkbox"><span class="switch-track"><span></span></span><span class="sr-only">Verify upstream TLS</span></label>
+        </div>
+        <div class="config-warning">
+          <span aria-hidden="true">◇</span>
+          <p><strong>Local control panel.</strong> The API has no inbound authentication. Do not expose this instance directly to the public internet.</p>
+        </div>
+        <div class="form-actions">
+          <span class="save-note" id="save-note">No unsaved changes</span>
+          <button class="button button-primary" type="submit" id="save-button">Save configuration</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel-section" id="endpoints" data-section="endpoints" data-reveal>
+      <div class="section-heading">
+        <div><p class="eyebrow">PUBLIC SURFACE</p><h2>Endpoint inventory</h2><p>Routes currently available on this instance.</p></div>
+      </div>
+      <div class="endpoint-card">
+        <div class="endpoint-head"><span>Method</span><span>Route</span><span>Description</span></div>
+        <div id="endpoint-list" class="endpoint-list"></div>
+      </div>
+    </section>
+
+    <footer><span>MyBestLink API</span><span>Control panel runs with your aiohttp server.</span></footer>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

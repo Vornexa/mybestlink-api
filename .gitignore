@@ -41,6 +41,8 @@ logs/
 .env
 *.ini
 config.json
+control-panel.json
+control-panel.json.tmp
 credentials.json
 token.txt
 cookies.pkl

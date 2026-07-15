@@ -28,7 +28,7 @@ async def _close_resources(app: web.Application) -> None:
 
 
 def create_app(settings: Settings | None = None) -> web.Application:
-    settings = settings or Settings.from_env()
+    settings = settings or Settings.from_env().load_control_overrides()
     sessions = SessionManager(settings)
 
     app = web.Application(middlewares=[base_middleware])
@@ -45,11 +45,12 @@ if __name__ == "__main__":
         level=logging.INFO,
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
-    runtime_settings = Settings.from_env()
+    runtime_settings = Settings.from_env().load_control_overrides()
     local_ip = get_local_ip()
     print("\nAPI running")
     print(f"Local:   http://127.0.0.1:{runtime_settings.port}/")
     print(f"Network: http://{local_ip}:{runtime_settings.port}/\n")
+    print(f"Control: http://127.0.0.1:{runtime_settings.port}/cp\n")
     web.run_app(
         create_app(runtime_settings),
         host=runtime_settings.host,

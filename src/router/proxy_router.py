@@ -2,6 +2,14 @@
 
 from aiohttp import web
 
+from src.service.control_panel import (
+    VIEW_DIR,
+    get_control_config,
+    get_control_panel,
+    get_data_console,
+    post_connector_test,
+    put_control_config,
+)
 from src.service.dashboard import get_dashboard
 from src.service.jadwal_service import get_jadwal_kuliah, get_jadwal_pengganti
 from src.service.login import post_login
@@ -16,6 +24,12 @@ def setup_user_routes(app: web.Application) -> None:
     app.add_routes(
         [
             web.get("/health", health),
+            web.get("/", get_control_panel),
+            web.get("/cp", get_control_panel),
+            web.get("/cp/data", get_data_console),
+            web.get("/cp/api/config", get_control_config),
+            web.put("/cp/api/config", put_control_config),
+            web.post("/cp/api/connectors/test", post_connector_test),
             web.post("/login", post_login),
             web.get("/dashboard", get_dashboard),
             web.get("/jadwal/kuliah", get_jadwal_kuliah),
@@ -24,3 +38,4 @@ def setup_user_routes(app: web.Application) -> None:
             web.post("/cek-lokasi", post_cek_lokasi),
         ]
     )
+    app.router.add_static("/view/", path=VIEW_DIR, name="view")
