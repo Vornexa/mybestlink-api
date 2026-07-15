@@ -50,6 +50,28 @@ pure parser (`src/parser`)    upstream client (`src/service/upstream_client.py`)
 
 Parser di `src/parser/mybestlink_parser.py` adalah fungsi murni: HTML masuk, dict/list keluar. Parser tidak melakukan network I/O dan diuji menggunakan fixture HTML kecil. Pemisahan ini mencegah perubahan markup menyebar ke handler.
 
+### Control panel
+
+Seluruh implementasi control panel berada di `view/`: template HTML di
+`view/templates`, aset browser di `view/static`, metadata UI, dan controller
+aiohttp di `view/controller.py`. Registrasi URL tetap menjadi tanggung jawab
+`src/router/proxy_router.py`; controller hanya menangani render halaman,
+snapshot konfigurasi, penyimpanan perubahan, dan pengujian connector. Static
+route hanya mengekspos `view/static`, bukan source controller.
+
+Control panel memakai halaman terpisah untuk setiap tugas:
+
+- `/cp`: ringkasan runtime;
+- `/cp/connectors`: konfigurasi dan pengujian upstream;
+- `/cp/configuration`: timeout dan verifikasi TLS;
+- `/cp/endpoints`: inventaris route API;
+- `/cp/data`: autentikasi dan eksekusi endpoint.
+
+Tema terang/gelap dikelola oleh `view/static/theme.js`. Preferensi disimpan di
+browser dan memakai preferensi sistem jika pengguna belum memilih tema.
+Rincian design system, alur UI, responsive behavior, motion, dan kontrak data
+tersedia di [CONTROL_PANEL.md](CONTROL_PANEL.md).
+
 ### Portal ujian
 
 Flow ujian mengikuti redirect autentikasi dari elearning ke portal ujian. Setiap URL hasil `Location`, meta-refresh, atau link jadwal diselesaikan dengan `urljoin` lalu divalidasi terhadap scheme, hostname, dan port portal ujian. Ini mencegah redirect tak dipercaya/SSRF.

@@ -7,8 +7,25 @@ const state = {
 const $ = (selector) => document.querySelector(selector);
 const connectorGrid = $("#connector-grid");
 const configForm = $("#config-form");
+const connectorForm = $("#connector-form");
 const toast = $("#toast");
 let toastTimer;
+
+function setButtonLabel(button, label) {
+  const labelElement = button.querySelector("[data-button-label]");
+  if (labelElement) labelElement.textContent = label;
+  else button.textContent = label;
+}
+
+function updateClock() {
+  const clock = $("#dashboard-clock");
+  if (!clock) return;
+  clock.textContent = new Intl.DateTimeFormat("en", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date());
+}
 
 function showToast(message, isError = false) {
   clearTimeout(toastTimer);
@@ -29,13 +46,13 @@ async function api(path, options = {}) {
 }
 
 function renderSummary(data) {
-  $("#api-status").textContent = "API operational";
-  $("#stat-status").textContent = "Online";
-  $("#stat-host").textContent = `${data.runtime.host}:${data.runtime.port}`;
-  $("#stat-connectors").textContent = data.connectors.length;
-  $("#stat-endpoints").textContent = data.runtime.endpoint_count;
-  $("#stat-cookies").textContent = data.runtime.cookie_count;
-  $("#connector-count").textContent = `${data.connectors.length} connectors`;
+  if ($("#api-status")) $("#api-status").textContent = "API operational";
+  if ($("#stat-status")) $("#stat-status").textContent = "Online";
+  if ($("#stat-host")) $("#stat-host").textContent = `${data.runtime.host}:${data.runtime.port}`;
+  if ($("#stat-connectors")) $("#stat-connectors").textContent = data.connectors.length;
+  if ($("#stat-endpoints")) $("#stat-endpoints").textContent = data.runtime.endpoint_count;
+  if ($("#stat-cookies")) $("#stat-cookies").textContent = data.runtime.cookie_count;
+  if ($("#connector-count")) $("#connector-count").textContent = `${data.connectors.length} connectors`;
   window.MyBestMotion?.flash(document.querySelectorAll(".stat-card"));
 }
 
@@ -93,6 +110,7 @@ function connectorCard(connector) {
 }
 
 function renderConnectors(connectors) {
+  if (!connectorGrid) return;
   const cards = connectors.map(connectorCard);
   connectorGrid.replaceChildren(...cards);
   requestAnimationFrame(() => window.MyBestMotion?.animateItems(cards, { y: 12, stagger: 55 }));
@@ -115,16 +133,18 @@ function renderEndpoints(endpoints) {
     row.append(method, route, description);
     return row;
   });
-  $("#endpoint-list").replaceChildren(...rows);
+  const endpointList = $("#endpoint-list");
+  if (!endpointList) return;
+  endpointList.replaceChildren(...rows);
   requestAnimationFrame(() => window.MyBestMotion?.animateItems(rows, { y: 8, stagger: 35 }));
 }
 
 function renderConfig(config) {
-  $("#request-timeout").value = config.request_timeout_seconds;
-  $("#verify-ssl").checked = config.verify_ssl;
+  if ($("#request-timeout")) $("#request-timeout").value = config.request_timeout_seconds;
+  if ($("#verify-ssl")) $("#verify-ssl").checked = config.verify_ssl;
   state.config = { ...config };
   state.dirty = false;
-  $("#save-note").textContent = "No unsaved changes";
+  if ($("#save-note")) $("#save-note").textContent = "No unsaved changes";
 }
 
 function render(data) {
@@ -137,7 +157,7 @@ function render(data) {
 
 function markDirty() {
   state.dirty = true;
-  $("#save-note").textContent = "Unsaved changes";
+  if ($("#save-note")) $("#save-note").textContent = "Unsaved changes";
 }
 
 async function loadControlPanel(showSuccess = false) {
@@ -148,8 +168,8 @@ async function loadControlPanel(showSuccess = false) {
     render(data);
     if (showSuccess) showToast("Control panel refreshed");
   } catch (error) {
-    $("#api-status").textContent = "API unavailable";
-    $("#stat-status").textContent = "Error";
+    if ($("#api-status")) $("#api-status").textContent = "API unavailable";
+    if ($("#stat-status")) $("#stat-status").textContent = "Error";
     showToast(error.message, true);
   } finally {
     refreshButton.disabled = false;
@@ -184,22 +204,26 @@ async function testConnector(id, input, status, latency, button) {
   }
 }
 
-configForm.addEventListener("input", markDirty);
-configForm.addEventListener("submit", async (event) => {
+async function saveConfiguration(event) {
   event.preventDefault();
+  const form = event.currentTarget;
   const saveButton = $("#save-button");
   const elearning = $("#url-elearning");
   const exam = $("#url-exam");
-  if (!elearning?.reportValidity() || !exam?.reportValidity() || !configForm.reportValidity()) return;
+  if (elearning && !elearning.reportValidity()) return;
+  if (exam && !exam.reportValidity()) return;
+  if (!form.reportValidity() || !state.config) return;
 
   const payload = {
-    elearning_base_url: elearning.value,
-    exam_base_url: exam.value,
-    request_timeout_seconds: Number($("#request-timeout").value),
-    verify_ssl: $("#verify-ssl").checked,
+    elearning_base_url: elearning?.value ?? state.config.elearning_base_url,
+    exam_base_url: exam?.value ?? state.config.exam_base_url,
+    request_timeout_seconds: $("#request-timeout")
+      ? Number($("#request-timeout").value)
+      : state.config.request_timeout_seconds,
+    verify_ssl: $("#verify-ssl")?.checked ?? state.config.verify_ssl,
   };
   saveButton.disabled = true;
-  saveButton.textContent = "Saving…";
+  setButtonLabel(saveButton, "Applying...");
   try {
     const data = await api("/cp/api/config", { method: "PUT", body: JSON.stringify(payload) });
     render(data);
@@ -208,89 +232,19 @@ configForm.addEventListener("submit", async (event) => {
     showToast(error.message, true);
   } finally {
     saveButton.disabled = false;
-    saveButton.textContent = "Save configuration";
+    setButtonLabel(
+      saveButton,
+      form === connectorForm ? "Save connectors" : "Apply configuration",
+    );
   }
+}
+
+[configForm, connectorForm].filter(Boolean).forEach((form) => {
+  form.addEventListener("input", markDirty);
+  form.addEventListener("submit", saveConfiguration);
 });
 
 $("#refresh-button").addEventListener("click", () => loadControlPanel(true));
-
-const sections = [...document.querySelectorAll("[data-section]")];
-const navLinks = [...document.querySelectorAll("[data-nav]")];
-let scrollTicking = false;
-
-function navTargetName(link) {
-  if (link.dataset.nav) return link.dataset.nav;
-  const hash = new URL(link.href, location.href).hash.replace("#", "");
-  return hash || "overview";
-}
-
-function ensureActiveNavVisible(link) {
-  if (!link || !window.matchMedia?.("(max-width: 760px)").matches) return;
-  link.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" });
-}
-
-function setActiveNav(sectionName) {
-  let activeLink;
-  navLinks.forEach((link) => {
-    const active = navTargetName(link) === sectionName;
-    link.classList.toggle("is-active", active);
-    if (active) activeLink = link;
-  });
-  ensureActiveNavVisible(activeLink);
-  window.MyBestMotion?.moveNavIndicator(activeLink);
-  window.setTimeout(() => window.MyBestMotion?.moveNavIndicator(activeLink), 360);
-}
-
-function currentSectionName() {
-  const probeY = window.innerHeight < 760 ? 112 : Math.round(window.innerHeight * 0.26);
-  let current = sections[0]?.dataset.section || "overview";
-  sections.forEach((section) => {
-    if (section.getBoundingClientRect().top <= probeY) current = section.dataset.section;
-  });
-  return current;
-}
-
-function updateActiveFromScroll() {
-  scrollTicking = false;
-  if (!sections.length) return;
-  setActiveNav(currentSectionName());
-}
-
-if (sections.length && navLinks.length && "IntersectionObserver" in window) {
-  const sectionObserver = new IntersectionObserver((entries) => {
-    const visible = entries
-      .filter((entry) => entry.isIntersecting)
-      .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-    if (!visible) return;
-    setActiveNav(visible.target.dataset.section);
-  }, { rootMargin: "-15% 0px -65%", threshold: [0, .2, .6] });
-  sections.forEach((section) => sectionObserver.observe(section));
-}
-
-window.addEventListener("scroll", () => {
-  if (scrollTicking) return;
-  scrollTicking = true;
-  requestAnimationFrame(updateActiveFromScroll);
-}, { passive: true });
-
-navLinks.forEach((link) => {
-  link.addEventListener("click", (event) => {
-    const url = new URL(link.href, location.href);
-    const samePageHash = url.pathname === location.pathname && url.hash;
-    if (samePageHash) {
-      event.preventDefault();
-      const target = document.querySelector(url.hash);
-      if (target) {
-        history.pushState(null, "", url.hash);
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
-    setActiveNav(navTargetName(link));
-  });
-});
-
-window.addEventListener("hashchange", updateActiveFromScroll);
-setActiveNav(location.hash.replace("#", "") || "overview");
 
 window.addEventListener("beforeunload", (event) => {
   if (!state.dirty) return;
@@ -298,4 +252,7 @@ window.addEventListener("beforeunload", (event) => {
   event.returnValue = "";
 });
 
+window.lucide?.createIcons({ attrs: { "aria-hidden": "true" } });
+updateClock();
+window.setInterval(updateClock, 30_000);
 loadControlPanel();

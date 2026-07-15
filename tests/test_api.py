@@ -68,6 +68,19 @@ class ApplicationTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.content_type, "text/html")
         self.assertIn("MyBestLink Control", await response.text())
 
+    async def test_control_panel_sections_are_individual_pages(self):
+        for path, title in (
+            ("/cp/connectors", "Connectors"),
+            ("/cp/configuration", "Configuration"),
+            ("/cp/endpoints", "Endpoints"),
+        ):
+            with self.subTest(path=path):
+                response = await self.client.get(path)
+                self.assertEqual(response.status, 200)
+                page = await response.text()
+                self.assertIn(f"<title>{title}", page)
+                self.assertIn('src="/view/theme.js"', page)
+
     async def test_control_panel_pages_share_viewport_reveal_motion(self):
         dashboard_response = await self.client.get("/cp")
         console_response = await self.client.get("/cp/data")
@@ -83,6 +96,11 @@ class ApplicationTest(unittest.IsolatedAsyncioTestCase):
         self.assertIn("data-reveal", console)
         self.assertNotIn("is-ready", dashboard)
         self.assertNotIn("is-ready", console)
+
+    async def test_control_panel_controller_is_not_publicly_served(self):
+        response = await self.client.get("/view/controller.py")
+
+        self.assertEqual(response.status, 404)
 
     async def test_control_config_reports_connectors_without_cookie_values(self):
         response = await self.client.get("/cp/api/config")

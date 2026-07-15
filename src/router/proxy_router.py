@@ -2,11 +2,14 @@
 
 from aiohttp import web
 
-from src.service.control_panel import (
-    VIEW_DIR,
+from view.controller import (
+    STATIC_DIR,
+    get_configuration_page,
+    get_connectors_page,
     get_control_config,
     get_control_panel,
     get_data_console,
+    get_endpoints_page,
     post_connector_test,
     put_control_config,
 )
@@ -26,6 +29,9 @@ def setup_user_routes(app: web.Application) -> None:
             web.get("/health", health),
             web.get("/", get_control_panel),
             web.get("/cp", get_control_panel),
+            web.get("/cp/connectors", get_connectors_page),
+            web.get("/cp/configuration", get_configuration_page),
+            web.get("/cp/endpoints", get_endpoints_page),
             web.get("/cp/data", get_data_console),
             web.get("/cp/api/config", get_control_config),
             web.put("/cp/api/config", put_control_config),
@@ -38,4 +44,4 @@ def setup_user_routes(app: web.Application) -> None:
             web.post("/cek-lokasi", post_cek_lokasi),
         ]
     )
-    app.router.add_static("/view/", path=VIEW_DIR, name="view")
+    app.router.add_static("/view/", path=STATIC_DIR, name="view")

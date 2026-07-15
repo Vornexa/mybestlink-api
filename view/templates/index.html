@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark"><meta name="theme-color" content="#f4f4ef">
+  <title>MyBestLink Control · Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/view/styles.css"><script src="/view/theme.js"></script>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js" defer></script><script src="/view/motion.js" defer></script><script src="/view/app.js" defer></script>
+</head>
+<body class="dashboard-page" data-page="overview">
+  <aside class="sidebar">
+    <a class="brand" href="/cp"><span class="brand-mark">M</span><span class="brand-copy"><strong>MyBestLink</strong><small>CONTROL OS</small></span></a>
+    <nav class="nav" aria-label="Main navigation"><span class="nav-caption">SYSTEM</span>
+      <a class="nav-link is-active" href="/cp"><i data-lucide="circle-gauge"></i><span>Overview</span><small>01</small></a>
+      <a class="nav-link" href="/cp/connectors"><i data-lucide="unplug"></i><span>Connectors</span><small>02</small></a>
+      <a class="nav-link" href="/cp/configuration"><i data-lucide="sliders-horizontal"></i><span>Configuration</span><small>03</small></a>
+      <a class="nav-link" href="/cp/endpoints"><i data-lucide="route"></i><span>Endpoints</span><small>04</small></a>
+      <span class="nav-caption nav-caption-tools">WORKSPACE</span><a class="nav-link" href="/cp/data"><i data-lucide="square-terminal"></i><span>API console</span><small>05</small></a>
+    </nav>
+    <div class="sidebar-foot"><div class="instance-state"><span class="pulse-dot"></span><span>INSTANCE ONLINE</span></div><small>LOCAL / PRIVATE</small></div>
+  </aside>
+  <main class="main">
+    <header class="topbar" data-reveal><div class="breadcrumb"><span>MYBESTLINK</span><i data-lucide="chevron-right"></i><strong>OVERVIEW</strong></div><div class="topbar-actions"><time id="dashboard-clock">00:00</time><button class="icon-button theme-toggle" data-theme-toggle type="button" aria-label="Toggle color theme"><i class="theme-sun" data-lucide="sun"></i><i class="theme-moon" data-lucide="moon"></i></button><button class="icon-button" id="refresh-button" type="button" aria-label="Refresh dashboard"><i data-lucide="refresh-cw"></i></button><a class="avatar" href="/cp/data">API</a></div></header>
+    <section class="overview-hero" data-reveal>
+      <div class="hero-copy"><div class="section-code">01 / CONTROL CENTER</div><h1>Quiet systems.<br><span>Clear signals.</span></h1><p>See the state of your local API at a glance, then move directly to the control you need.</p><div class="hero-actions"><a class="button button-primary" href="/cp/data">Launch console <i data-lucide="arrow-up-right"></i></a><span class="status-pill"><span class="pulse-dot"></span><span id="api-status">Checking API</span></span></div></div>
+      <div class="topology" aria-label="Live service topology"><div class="topology-label"><span>LIVE TOPOLOGY</span><span>04 NODES</span></div><svg class="topology-lines" viewBox="0 0 480 300" aria-hidden="true"><path d="M240 150 L88 66 M240 150 L394 78 M240 150 L380 236 M240 150 L94 238"/><circle cx="240" cy="150" r="74"/></svg><div class="topology-core"><span>MB</span><small>GATEWAY</small></div><span class="topology-node node-a"><i></i>LEARN</span><span class="topology-node node-b"><i></i>EXAM</span><span class="topology-node node-c"><i></i>DATA</span><span class="topology-node node-d"><i></i>AUTH</span></div>
+    </section>
+    <section class="stats-grid" data-reveal>
+      <article class="stat-card stat-status"><div class="stat-head"><span>STATUS</span><i data-lucide="activity"></i></div><strong id="stat-status">--</strong><p id="stat-host">Loading runtime</p></article>
+      <a class="stat-card" href="/cp/connectors"><div class="stat-head"><span>CONNECTORS</span><small>OPEN ↗</small></div><strong id="stat-connectors">--</strong><p>Configured services</p></a>
+      <a class="stat-card" href="/cp/endpoints"><div class="stat-head"><span>ENDPOINTS</span><small>OPEN ↗</small></div><strong id="stat-endpoints">--</strong><p>Available actions</p></a>
+      <a class="stat-card" href="/cp/data"><div class="stat-head"><span>COOKIES</span><small>SESSION</small></div><strong id="stat-cookies">--</strong><p>Stored privately</p></a>
+    </section>
+    <section class="quick-grid" data-reveal><a href="/cp/connectors"><span>02</span><div><strong>Manage connections</strong><p>Update and test upstream URLs.</p></div><i data-lucide="arrow-up-right"></i></a><a href="/cp/configuration"><span>03</span><div><strong>Runtime settings</strong><p>Control timeout and TLS validation.</p></div><i data-lucide="arrow-up-right"></i></a></section>
+    <footer><span>MYBESTLINK CONTROL OS</span><span>LOCAL FIRST / 2026</span></footer>
+  </main><div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body></html>

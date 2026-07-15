@@ -4,6 +4,12 @@ const gatherButton = $("#gather-button");
 const progress = $("#gather-progress");
 let toastTimer;
 
+function setButtonLabel(button, label) {
+  const labelElement = button.querySelector("[data-button-label]");
+  if (labelElement) labelElement.textContent = label;
+  else button.textContent = label;
+}
+
 const requests = [
   { id: "health", path: "/health" },
   { id: "dashboard", path: "/dashboard" },
@@ -169,7 +175,7 @@ $("#login-form").addEventListener("submit", async (event) => {
   const button = $("#login-button");
   const status = $("#login-status");
   button.disabled = true;
-  button.textContent = "Logging in…";
+  setButtonLabel(button, "Connecting...");
   setStatus(status, "Connecting");
   try {
     const data = await api("/login", {
@@ -185,7 +191,7 @@ $("#login-form").addEventListener("submit", async (event) => {
     showToast(error.message, true);
   } finally {
     button.disabled = false;
-    button.textContent = "Login session";
+    setButtonLabel(button, "Start session");
   }
 });
 
@@ -196,18 +202,18 @@ $("#detect-location").addEventListener("click", () => {
   }
   const button = $("#detect-location");
   button.disabled = true;
-  button.textContent = "Detecting…";
+  setButtonLabel(button, "Locating...");
   navigator.geolocation.getCurrentPosition(
     ({ coords }) => {
       $("#latitude").value = coords.latitude.toFixed(6);
       $("#longitude").value = coords.longitude.toFixed(6);
       button.disabled = false;
-      button.textContent = "Use current location";
+      setButtonLabel(button, "Use my location");
       showToast("Current location filled in");
     },
     (error) => {
       button.disabled = false;
-      button.textContent = "Use current location";
+      setButtonLabel(button, "Use my location");
       showToast(error.message, true);
     },
     { enableHighAccuracy: true, timeout: 10000 },
@@ -220,7 +226,7 @@ $("#location-form").addEventListener("submit", async (event) => {
   const status = $("#location-status");
   const result = $("#location-result");
   button.disabled = true;
-  button.textContent = "Validating…";
+  setButtonLabel(button, "Validating...");
   setStatus(status, "Checking");
   try {
     const data = await api("/cek-lokasi", {
@@ -239,7 +245,7 @@ $("#location-form").addEventListener("submit", async (event) => {
     result.textContent = error.message;
   } finally {
     button.disabled = false;
-    button.textContent = "Validate location";
+    setButtonLabel(button, "Validate");
   }
 });
 
@@ -250,10 +256,10 @@ $("#clear-results").addEventListener("click", () => {
     $(".result-state", card).textContent = "Waiting";
     const body = $(".result-body", card);
     body.className = "result-body empty-state";
-    body.textContent = "No data collected yet.";
+    body.textContent = "No response yet.";
   });
   window.MyBestMotion?.setProgress(progress, 0);
-  $("#gather-note").textContent = "Login first for protected data.";
+  $("#gather-note").textContent = "Authenticate first for protected data.";
   showToast("Collected data cleared");
 });
 
